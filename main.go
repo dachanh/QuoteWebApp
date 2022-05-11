@@ -1,7 +1,7 @@
 package main
 
 import (
-	"QuoteWebApp/component/migrateDB"
+	"QuoteWebApp/migrateDB"
 	"github.com/gin-gonic/gin"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
