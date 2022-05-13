@@ -5,7 +5,7 @@ import (
 )
 
 type AppContext interface {
-	GetMaiDBConnection() *gorm.DB
+	GetDBConnection() *gorm.DB
 }
 type appCtx struct {
 	db        *gorm.DB

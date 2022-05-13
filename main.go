@@ -1,7 +1,9 @@
 package main
 
 import (
+	"QuoteWebApp/component/appctx"
 	"QuoteWebApp/migrateDB"
+	"QuoteWebApp/module/quote/transport/ginquote"
 	"github.com/gin-gonic/gin"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -19,11 +21,13 @@ func main() {
 	db = db.Debug()
 	// migrate database
 	migrateDB.Migrate(db)
-	//appContext := appctx.NewAppContext(db, "helloworld")
+	appContext := appctx.NewAppContext(db)
 
 	route := gin.Default()
 	route.GET("/ping", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"message": "pong"})
 	})
+	route.POST("/quote",ginquote.CreateQuote(appContext))
 	//route.GET("/like")
+	route.Run(":8181")
 }
