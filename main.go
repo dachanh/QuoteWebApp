@@ -28,6 +28,7 @@ func main() {
 		c.JSON(http.StatusOK, gin.H{"message": "pong"})
 	})
 	route.POST("/quote",ginquote.CreateQuote(appContext))
+	route.GET("/quote",ginquote.GetCurrentQuoteToday(appContext))
 	//route.GET("/like")
 	route.Run(":8181")
 }
