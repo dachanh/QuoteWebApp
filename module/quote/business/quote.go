@@ -7,17 +7,18 @@ import (
 	"fmt"
 )
 
-type quoteStorage interface {
+type QuoteStorage interface {
 	CreateQuote(ctx context.Context,data *quotemodel.Quote ) error
 	FindQuote(ctx context.Context, conditions map[string]interface{})(*quotemodel.Quote, error)
 	UpdateQuoteToday(ctx context.Context,id int, updateQuoteToday *quotemodel.Quote) error
+	GetFirstUpdatedItem(ctx context.Context,id int)(*quotemodel.Quote , error)
 }
 
 type quoteBusiness struct {
-	quoteStorage quoteStorage
+	quoteStorage QuoteStorage
 }
 
-func NewCreateQuoteBusiness(store quoteStorage) *quoteBusiness{
+func NewCreateQuoteBusiness(store QuoteStorage) *quoteBusiness{
 	return &quoteBusiness{
 		quoteStorage: store,
 	}
@@ -50,4 +51,11 @@ func (biz *quoteBusiness) UpdateQuoteToday(ctx context.Context,id int, updateQuo
 		return common.ErrDB(err)
 	}
 	return nil
+}
+
+func(biz *quoteBusiness) GetFirstUpdatedItem(ctx context.Context,id int)(*quotemodel.Quote , error){
+	quote, err := biz.quoteStorage.GetFirstUpdatedItem(ctx,id)
+	fmt.Println("==========================")
+	fmt.Println(quote)
+	return quote, err
 }

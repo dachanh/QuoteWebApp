@@ -14,7 +14,6 @@ import (
 	"os"
 )
 
-
 func main() {
 	dsn := os.Getenv("DNS")
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
@@ -31,8 +30,8 @@ func main() {
 	route.GET("/ping", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"message": "pong"})
 	})
-	route.POST("/quote",ginquote.CreateQuote(appContext))
-	route.GET("/quote",ginquote.GetCurrentQuoteToday(appContext))
+	route.POST("/quote", ginquote.CreateQuote(appContext))
+	route.GET("/quote", ginquote.GetCurrentQuoteToday(appContext))
 	//route.GET("/like")
 	updateQuoteTodayJob := workers.SetUpWorker()
 	updateQuoteTodayJob.SetDelayTime(1)
