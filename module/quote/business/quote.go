@@ -4,7 +4,9 @@ import (
 	"QuoteWebApp/common"
 	quotemodel "QuoteWebApp/module/quote/model"
 	"context"
+	"errors"
 	"fmt"
+	"sync"
 )
 
 type QuoteStorage interface {
@@ -25,7 +27,11 @@ func NewCreateQuoteBusiness(store QuoteStorage) *quoteBusiness{
 }
 
 func (biz *quoteBusiness) CreateQuote(ctx context.Context,data *quotemodel.Quote) error{
-	err := biz.quoteStorage.CreateQuote(ctx,data)
+	_, err:= biz.FindQuote(ctx,map[string]interface{}{"content":data.Content})
+	if err == nil{
+		return common.ErrDB(errors.New("The content is existed!"))
+	}
+	err = biz.quoteStorage.CreateQuote(ctx,data)
 	if err != nil{
 		return  common.ErrDB(err)
 	}
@@ -55,7 +61,28 @@ func (biz *quoteBusiness) UpdateQuoteToday(ctx context.Context,id int, updateQuo
 
 func(biz *quoteBusiness) GetFirstUpdatedItem(ctx context.Context,id int)(*quotemodel.Quote , error){
 	quote, err := biz.quoteStorage.GetFirstUpdatedItem(ctx,id)
-	fmt.Println("==========================")
-	fmt.Println(quote)
 	return quote, err
+}
+
+func(biz *quoteBusiness) UpdateLikeOrDislike(ctx context.Context, isLike bool) error{
+	quoteCurrent, err := biz.FindQuote(ctx, map[string]interface{}{"is_public":true})
+	if err != nil{
+		return common.ErrDB(err)
+	}
+	var mu sync.Mutex
+	mu.Lock()
+	if isLike{
+		quoteCurrent.Like += 1
+
+	}else if quoteCurrent.Like != 0{
+		quoteCurrent.Like -= 1
+	}else {
+		return nil
+	}
+	err = biz.quoteStorage.UpdateQuoteToday(ctx,quoteCurrent.ID,quoteCurrent)
+	mu.Unlock()
+	if err != nil{
+		return common.ErrDB(err)
+	}
+	return nil
 }

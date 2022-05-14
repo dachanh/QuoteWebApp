@@ -32,10 +32,12 @@ func main() {
 	})
 	route.POST("/quote", ginquote.CreateQuote(appContext))
 	route.GET("/quote", ginquote.GetCurrentQuoteToday(appContext))
+	route.PUT("/like", ginquote.LikeCurrentQuoteToday(appContext))
+	route.PUT("/dislike", ginquote.DislikeCurrentQuoteToday(appContext))
 	//route.GET("/like")
 	updateQuoteTodayJob := workers.SetUpWorker()
 	updateQuoteTodayJob.SetDelayTime(5)
-	updateQuoteTodayJob.SetIdleTime(60*10)
+	updateQuoteTodayJob.SetIdleTime(60*5)
 	updateQuoteTodayJob.SetTask(func() {
 		job.QuoteToday(appContext)
 	})
