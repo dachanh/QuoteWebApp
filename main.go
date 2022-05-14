@@ -34,8 +34,8 @@ func main() {
 	route.GET("/quote", ginquote.GetCurrentQuoteToday(appContext))
 	//route.GET("/like")
 	updateQuoteTodayJob := workers.SetUpWorker()
-	updateQuoteTodayJob.SetDelayTime(1)
-	updateQuoteTodayJob.SetIdleTime(1)
+	updateQuoteTodayJob.SetDelayTime(5)
+	updateQuoteTodayJob.SetIdleTime(60*10)
 	updateQuoteTodayJob.SetTask(func() {
 		job.QuoteToday(appContext)
 	})

@@ -1,7 +1,6 @@
 package appworker
 
 import (
-	"fmt"
 	"sync"
 )
 
@@ -16,7 +15,6 @@ func (app *AppWorkers) SetUpWorker() *AppWorker{
 }
 
 func (app *AppWorkers) Run() error{
-	fmt.Println("TEST WORKER")
 	go func() {
 		var wg = sync.WaitGroup{}
 		if len(app.WorkerList) > 0{

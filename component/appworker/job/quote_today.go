@@ -8,7 +8,6 @@ import (
 	quotestorage "QuoteWebApp/module/quote/storage"
 	"context"
 	"database/sql"
-	"fmt"
 	"time"
 )
 
@@ -39,7 +38,6 @@ func QuoteToday(appContext appctx.AppContext){
 		if postedDateFormated != nowDateFormated{
 			UpdateQuoteToday(biz,false,quoteCurrent.ID,nil)
 			newQuote , _ := biz.GetFirstUpdatedItem(context.Background(),quoteCurrent.ID)
-			fmt.Println(newQuote)
 			UpdateQuoteToday(biz,true,newQuote.ID,&now)
 		}
 	}
