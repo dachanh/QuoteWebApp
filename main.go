@@ -2,6 +2,8 @@ package main
 
 import (
 	"QuoteWebApp/component/appctx"
+	"QuoteWebApp/component/appworker"
+	"QuoteWebApp/component/appworker/job"
 	"QuoteWebApp/migrateDB"
 	"QuoteWebApp/module/quote/transport/ginquote"
 	"github.com/gin-gonic/gin"
@@ -12,12 +14,14 @@ import (
 	"os"
 )
 
+
 func main() {
 	dsn := os.Getenv("DNS")
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
 		log.Fatal(err)
 	}
+	workers := appworker.AppWorkers{}
 	db = db.Debug()
 	// migrate database
 	migrateDB.Migrate(db)
@@ -30,5 +34,12 @@ func main() {
 	route.POST("/quote",ginquote.CreateQuote(appContext))
 	route.GET("/quote",ginquote.GetCurrentQuoteToday(appContext))
 	//route.GET("/like")
+	updateQuoteTodayJob := workers.SetUpWorker()
+	updateQuoteTodayJob.SetDelayTime(1)
+	updateQuoteTodayJob.SetIdleTime(1)
+	updateQuoteTodayJob.SetTask(func() {
+		job.QuoteToday(appContext)
+	})
+	workers.Run()
 	route.Run(":8181")
 }
